@@ -16,6 +16,18 @@ This skill walks through a checklist to verify that a pi package development
 environment is correctly configured. It writes findings to a state file in the
 project root (`.pi-init.md`) so progress is persisted between sessions.
 
+## Official Pi Documentation
+
+If you need to look up APIs or verify behavior during initialization, see pi's
+installed docs:
+
+```bash
+# Find the docs directory
+npm root -g  # → <dir>/@mariozechner/pi-coding-agent/docs/
+```
+
+Key documents: `extensions.md`, `skills.md`, `themes.md`, `packages.md`.
+
 ## Overview
 
 The checklist has a welcome step followed by four execution steps. Each step

@@ -101,6 +101,8 @@ pi.registerTool({
 ### Tool with prompt snippet and guidelines
 
 ```typescript
+import { StringEnum } from "@mariozechner/pi-ai";
+
 pi.registerTool({
   name: "todo",
   label: "Todo",
@@ -197,7 +199,9 @@ async execute(toolCallId, params, signal, onUpdate, ctx) {
 
   if (truncation.truncated) {
     const tempFile = writeTempFile(output);
-    result += `\n\n[Output truncated. Full output saved to: ${tempFile}]`;
+    result += `\n\n[Output truncated: ${truncation.outputLines} of ${truncation.totalLines} lines`;
+    result += ` (${formatSize(truncation.outputBytes)} of ${formatSize(truncation.totalBytes)}).`;
+    result += ` Full output saved to: ${tempFile}]`;
   }
 
   return { content: [{ type: "text", text: result }] };
@@ -674,6 +678,54 @@ pi.registerTool({
   },
 });
 ```
+
+### Self-managed shell
+
+Set `renderShell: "self"` when the tool needs full control over framing,
+padding, and background — for example large previews that must stay visually
+stable after the tool settles.
+
+```typescript
+pi.registerTool({
+  name: "preview",
+  parameters: Type.Object({}),
+  renderShell: "self",
+  async execute() {
+    return { content: [{ type: "text", text: "ok" }], details: undefined };
+  },
+  renderCall(args, theme) {
+    return new Text(theme.fg("accent", "my custom shell"), 0, 0);
+  },
+});
+```
+
+### Keybinding hints in renderers
+
+Use `keyHint()` to display keybinding hints that respect the active
+keybinding configuration:
+
+```typescript
+import { keyHint } from "@mariozechner/pi-coding-agent";
+
+renderResult(result, { expanded }, theme, context) {
+  let text = theme.fg("success", "✓ Done");
+  if (!expanded) {
+    text += ` (${keyHint("app.tools.expand", "to expand")})`;
+  }
+  return new Text(text, 0, 0);
+}
+```
+
+Available functions:
+- `keyHint(keybinding, description)` — formats a configured keybinding id
+- `keyText(keybinding)` — returns the raw key text for a keybinding id
+- `rawKeyHint(key, description)` — format a raw key string
+
+Common keybinding ids:
+- `app.tools.expand`, `app.editor.external`, `app.session.rename`
+- `tui.select.confirm`, `tui.select.cancel`, `tui.input.tab`
+
+See `keybindings.md` in pi's docs for the full list.
 
 ### Message renderer
 

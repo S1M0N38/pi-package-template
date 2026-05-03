@@ -16,7 +16,9 @@ All tools must use `Type.Object()` for their parameters.
 5. [Arrays & Tuples](#5-arrays--tuples)
 6. [Optional Fields & Defaults](#6-optional-fields--defaults)
 7. [Description Best Practices](#7-description-best-practices)
-8. [Common Parameter Patterns](#8-common-parameter-patterns)
+8. [Reusable Sub-schemas](#8-reusable-sub-schemas)
+9. [Empty Parameters](#9-empty-parameters)
+10. [Common Parameter Patterns](#10-common-parameter-patterns)
 
 ---
 

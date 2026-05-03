@@ -14,6 +14,34 @@ description: >
 This skill provides patterns and best practices for building pi packages.
 Read the reference files below on demand based on the current task.
 
+## Official Pi Documentation
+
+For the complete and authoritative API reference, read pi's installed docs.
+Locate them with:
+
+```bash
+# Find the docs directory
+npm root -g  # → <dir>/@mariozechner/pi-coding-agent/docs/
+```
+
+Key documents (relative to that directory):
+
+| Doc | Contents |
+|-----|----------|
+| `extensions.md` | Full extension API: events, tools, commands, providers, rendering |
+| `tui.md` | TUI component API for custom UI |
+| `skills.md` | Skill authoring and the Agent Skills standard |
+| `themes.md` | Theme format and all color tokens |
+| `keybindings.md` | Keybinding IDs and shortcut registration |
+| `packages.md` | Package distribution and manifest |
+| `session-format.md` | SessionManager API and entry types |
+| `compaction.md` | Custom compaction handlers |
+| `custom-provider.md` | Advanced provider topics, OAuth, custom streaming |
+| `models.md` | Model configuration |
+| `rpc.md` | RPC mode and extension UI protocol |
+
+When in doubt about an API, read the official doc first — it is the source of truth.
+
 ## Reference Files
 
 Read these on demand based on the task. Do NOT load all at once.
@@ -44,7 +72,9 @@ Typebox schema patterns for tool parameters.
 5. Arrays & Tuples
 6. Optional Fields & Defaults
 7. Description Best Practices
-8. Common Parameter Patterns (paths, file patterns, modes)
+8. Reusable Sub-schemas
+9. Empty Parameters
+10. Common Parameter Patterns (paths, file patterns, modes)
 
 ### `references/THEMES.md`
 Theme creation reference with all 51 color tokens.
