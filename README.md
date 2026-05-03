@@ -177,22 +177,42 @@ Uses [release-please](https://github.com/googleapis/release-please) to automate 
 3. Merge the Release PR → release-please creates a **GitHub Release** + git tag
 4. The `publish` job auto-publishes to **npm** (requires `NPM_TOKEN` secret)
 
-#### Setup
+#### GitHub Setup
 
-1. Add an `NPM_TOKEN` secret to your GitHub repo ([settings → secrets](https://docs.github.com/en/actions/security-for-github-actions/using-secrets-in-github-actions))
-2. Write conventional commits — that's it!
+1. **Create an npm access token**
+   - Go to [npmjs.com → Access Tokens](https://www.npmjs.com/settings/~/tokens)
+   - Generate a new **Automation** token (bypasses 2FA for CI)
+
+2. **Add the secret to your GitHub repo**
+   - Go to your repo → **Settings** → **Secrets and variables** → **Actions**
+   - Click **New repository secret**
+   - Name: `NPM_TOKEN`
+   - Value: paste your npm access token
+
+3. **Allow GitHub Actions to create PRs** (required for release-please)
+   - Go to your repo → **Settings** → **Actions** → **General**
+   - Under **Workflow permissions**, select **Read and write permissions**
+   - Check **Allow GitHub Actions to create and approve pull requests**
+
+4. Write conventional commits — everything else is automatic!
+
+#### How `pi update` works
+
+Once your package is published, users can update with:
+
+```bash
+pi update                    # update pi and all packages
+pi update --extensions       # update packages only
+pi update npm:your-package   # update one package
+```
+
+Pi compares the installed version against `npm view <name> version` and installs `@latest` if a newer version is found. Pinned versions (e.g. `npm:pkg@1.0.0`) are never auto-updated.
 
 #### Manual publish (alternative)
 
 ```bash
 npm login
 npm publish
-```
-
-After publishing, users can install your package with:
-
-```bash
-pi install npm:your-package-name
 ```
 
 ## Key Concepts
