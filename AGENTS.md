@@ -41,21 +41,85 @@ npm run format         # Format code only (biome format --write)
 
 ### Testing the Package with pi
 
+There are three ways to test, depending on what you need:
+
+#### 1. Print mode (`-p`) — quick tool/functionality test
+
+Non-interactive, prints text output and exits. Best for verifying tools work.
+
 ```bash
-# Ephemeral test — loads package for current session only
-pi -e .
+# Test a tool (use -ne to skip other installed extensions)
+pi -ne -e . --no-session -p "Call the hello tool with name Alice. You MUST use the hello tool."
+# Output: The hello tool returned: Hello, Alice! 👋
 
-# Test a specific tool
-pi -e . -p "Use the hello tool to greet Alice"
+# Test with the bash tool to inspect what pi sees
+pi -ne -e . --no-session -p "List the tools you have available."
+```
 
-# Test a slash command (interactive mode)
-pi -e .
-# Then type: /hello Alice
+**Important:** Always use `-ne` (no-extensions) with `-e .` to avoid interference from globally installed extensions (like pi-mcp-adapter). Only the package being tested will load.
 
-# Install locally for persistent testing
-pi install .
+#### 2. Interactive mode — test slash commands and TUI
 
-# Verify what ships in the npm tarball
+Full interactive session. Use this to test `/commands`, keyboard shortcuts, and extension UI (select, confirm, input dialogs).
+
+```bash
+# Start interactive session with only this package loaded
+pi -ne -e . --no-session
+# Then type commands like: /hello Alice
+```
+
+#### 3. RPC mode — programmatic testing from another pi session
+
+Spawns a child pi process you can control via stdin/stdout JSON protocol. Best for automated testing and closing the agentic loop — the parent agent can send prompts, read tool results, and verify behavior.
+
+```javascript
+// Spawn a child pi instance for testing
+const { spawn } = require("child_process");
+const agent = spawn("pi", ["-ne", "-e", ".", "--no-session", "--mode", "rpc"], {
+  stdio: ["pipe", "pipe", "pipe"],
+  cwd: "/path/to/package",
+});
+
+// Read events from stdout (JSONL)
+agent.stdout.on("data", (chunk) => {
+  for (const line of chunk.toString().split("\n")) {
+    if (!line.trim()) continue;
+    const evt = JSON.parse(line);
+    if (evt.type === "tool_execution_end") {
+      console.log("Tool result:", evt.result?.content?.[0]?.text);
+    }
+    if (evt.type === "agent_end") {
+      console.log("Agent finished");
+      agent.kill();
+    }
+  }
+});
+
+// Send a prompt after startup
+setTimeout(() => {
+  agent.stdin.write(JSON.stringify({
+    type: "prompt",
+    message: "Call the hello tool with name AgentTest.",
+  }) + "\n");
+}, 3000);
+```
+
+**Extension UI in RPC mode:** If your extension uses `ctx.ui.select()`, `ctx.ui.confirm()`, or `ctx.ui.input()`, RPC mode sends `extension_ui_request` events on stdout. You must respond with `extension_ui_response` on stdin:
+
+```javascript
+// Handling a confirm dialog from the extension
+if (evt.type === "extension_ui_request" && evt.method === "confirm") {
+  agent.stdin.write(JSON.stringify({
+    type: "extension_ui_response",
+    id: evt.id,          // must match the request id
+    confirmed: true,     // or false, or { cancelled: true }
+  }) + "\n");
+}
+```
+
+#### Verify npm tarball contents
+
+```bash
 npm pack --dry-run
 ```
 
@@ -127,12 +191,25 @@ If either fails, fix the issues before proceeding. Common fixes:
 
 ### Step 4: Test with pi
 
+Choose the right testing mode for what you're verifying:
+
+**For tools and basic functionality** (quick, automated):
 ```bash
-pi -e . -p "Test prompt that exercises your new feature"
+pi -ne -e . --no-session -p "Call <tool_name> with <args>. You MUST use the <tool_name> tool."
+```
+Check the output for correct results.
+
+**For slash commands, keyboard shortcuts, and UI dialogs** (interactive):
+```bash
+pi -ne -e . --no-session
+# Then type: /<command_name>
 ```
 
-Verify:
-- The extension loads without errors
+**For programmatic end-to-end testing** (RPC mode):
+Spawn a child `pi --mode rpc` process and verify tool results via the JSONL event stream. See the "Testing the Package with pi" section above for the full pattern.
+
+**After any test**, verify:
+- Extension loads without errors
 - Tools return correct results
 - Commands respond as expected
 - No unexpected notifications or errors
