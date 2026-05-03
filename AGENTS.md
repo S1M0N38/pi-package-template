@@ -24,9 +24,19 @@ tsconfig.json          # Type checking only (noEmit)
 
 - **No build step** — pi loads `.ts` via jiti. Never add a build/compile step.
 - **Peer dependencies** — `@mariozechner/pi-ai`, `@mariozechner/pi-coding-agent`, `@mariozechner/pi-tui`, `@mariozechner/pi-agent-core`, `typebox` are provided by pi at runtime. List them as `peerDependencies` with `"*"` range. Do not bundle them.
-- **Conventional commits** — This project uses `feat:`, `fix:`, `docs:`, `chore:`, `ci:`, `refactor:` prefixes. Releases are automated via release-please.
 - **2-space indentation** — Enforced by biome.
 - **Themes require all 51 color tokens** — See `themes/template.json` for the full list.
+
+---
+
+## Git and PR Conventions
+
+- **Conventional commits** — `feat:`, `fix:`, `docs:`, `chore:`, `ci:`, `refactor:` prefixes. Releases are automated via release-please.
+- **Rebase merges only** — The repo does not allow squash or merge commits. Always use:
+  ```bash
+  gh pr merge <number> --rebase
+  ```
+- **Release PRs** — release-please automatically opens a Release PR when conventional commits land on `main`. Review the changelog, then merge it with `--rebase` to trigger `npm publish`.
 
 ---
 
