@@ -4,10 +4,10 @@
   "description": "A minimal starter template for building pi packages",
   "type": "module",
   "license": "MIT",
-  "author": "",
+  "author": "S1M0N38",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/S1M0N38/pi-package-template"
   },
   "keywords": [
     "pi-package",
