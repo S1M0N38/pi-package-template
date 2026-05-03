@@ -144,16 +144,48 @@ pi -e .
 pi install ./path/to/your-package
 
 # Type check
-npx tsc --noEmit
+npm run typecheck
+
+# Lint
+npm run lint
+
+# Fix lint issues
+npm run lint:fix
+
+# Format code
+npm run format
 ```
 
-## Publishing
+## CI/CD
+
+This template includes two GitHub Actions workflows:
+
+### CI (`ci.yml`)
+
+Runs on every push and PR to `main`:
+- **Type check** — `tsc --noEmit`
+- **Lint** — biome check
+
+### Release (`release.yml`)
+
+Uses [release-please](https://github.com/googleapis/release-please) to automate releases:
+
+1. Write conventional commits (`feat:`, `fix:`, `feat!:`, etc.)
+2. On push to `main`, release-please opens/updates a **Release PR** with:
+   - Updated `CHANGELOG.md` (auto-generated from commits)
+   - Version bump in `package.json`
+3. Merge the Release PR → release-please creates a **GitHub Release** + git tag
+4. The `publish` job auto-publishes to **npm** (requires `NPM_TOKEN` secret)
+
+#### Setup
+
+1. Add an `NPM_TOKEN` secret to your GitHub repo ([settings → secrets](https://docs.github.com/en/actions/security-for-github-actions/using-secrets-in-github-actions))
+2. Write conventional commits — that's it!
+
+#### Manual publish (alternative)
 
 ```bash
-# Login to npm (first time)
 npm login
-
-# Publish
 npm publish
 ```
 
