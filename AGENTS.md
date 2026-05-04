@@ -75,8 +75,25 @@ Full interactive session. Use this to test `/commands`, keyboard shortcuts, and 
 ```bash
 # Start interactive session with only this package loaded
 pi -ne -e . --no-session
-# Then type commands like: /hello Alice
+# Then type commands like: /hello Alice, /pick
 ```
+
+#### 2b. Automated TUI testing with pilotty
+
+For automated verification of TUI components (SelectList, overlays, custom editors, etc.), use the `pi-test` skill. It guides you through testing with [pilotty](https://github.com/msmps/pilotty) — a PTY-based terminal automation tool that spawns pi, captures screen snapshots, and sends keyboard input programmatically.
+
+**Prerequisites:** `npm install -g pilotty` (macOS/Linux only)
+
+```bash
+# Quick test: spawn pi, trigger /pick, verify TUI renders
+pilotty spawn --name tui-test --cwd . -- pi -ne -e . --no-session
+pilotty wait-for -s tui-test "[Skills]" -t 10000
+pilotty type -s tui-test "/pick"
+pilotty key -s tui-test Enter
+pilotty snapshot -s tui-test --format text
+```
+
+See `.agents/skills/pi-test/` for the full skill, and `.agents/skills/pi-test/references/TEST_PATTERNS.md` for ready-to-use test scripts covering SelectList, overlay, settings, editor, widget, and BorderedLoader patterns.
 
 #### 3. RPC mode — programmatic testing from another pi session
 
@@ -214,6 +231,9 @@ Check the output for correct results.
 pi -ne -e . --no-session
 # Then type: /<command_name>
 ```
+
+**For TUI components** (automated with pilotty):
+Use the `pi-test` skill — it provides step-by-step guidance and ready-to-use test scripts for interactive TUI verification.
 
 **For programmatic end-to-end testing** (RPC mode):
 Spawn a child `pi --mode rpc` process and verify tool results via the JSONL event stream. See the "Testing the Package with pi" section above for the full pattern.
