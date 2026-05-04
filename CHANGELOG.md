@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0](https://github.com/S1M0N38/pi-package-template/compare/v1.1.0...v1.2.0) (2026-05-04)
+
+
+### Features
+
+* add /pick command with interactive SelectList TUI ([15bde8d](https://github.com/S1M0N38/pi-package-template/commit/15bde8d3c353560350d3a8aa0a64d88f1d1a8622))
+* add pi-test skill for TUI testing with pilotty ([8b1e0cb](https://github.com/S1M0N38/pi-package-template/commit/8b1e0cb0ce4adf503ad0d4160bff656894e2d346))
+
 ## [1.1.0](https://github.com/S1M0N38/pi-package-template/compare/v1.0.1...v1.1.0) (2026-05-03)
 
 
